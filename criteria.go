@@ -2,7 +2,7 @@ package mongoext
 
 import (
 	"fmt"
-	"github.com/go-funcards/slice"
+	"github.com/go-fc/slice"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
