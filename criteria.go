@@ -2,7 +2,6 @@ package mongoext
 
 import (
 	"fmt"
-	"github.com/go-fc/slice"
 	"github.com/spf13/cast"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -205,7 +204,7 @@ func fields(key string) []string {
 }
 
 func value(values url.Values, fields []string) string {
-	return values.Get(fmt.Sprintf("%s[%s][%s][%s]", slice.ToAny(fields)...))
+	return values.Get(fmt.Sprintf("%s[%s][%s][%s]", fields[0], fields[1], fields[2], fields[3]))
 }
 
 func parse(val string, op Operator) any {

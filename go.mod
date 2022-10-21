@@ -3,7 +3,6 @@ module github.com/rumorsflow/mongo-ext
 go 1.19
 
 require (
-	github.com/go-fc/slice v0.0.0-20221017134547-de0d7a158c21
 	github.com/spf13/cast v1.5.0
 	go.mongodb.org/mongo-driver v1.10.3
 )
