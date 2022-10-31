@@ -107,7 +107,7 @@ func Find[T any](ctx context.Context, c *mongo.Collection, filter any, opts ...*
 		return nil, fmt.Errorf(ErrMsgQuery, err)
 	}
 
-	err = DecodeAll[T](ctx, result, &docs)
+	err = DecodeAll(ctx, result, &docs)
 	return
 }
 
