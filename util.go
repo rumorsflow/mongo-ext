@@ -86,18 +86,19 @@ func DeleteMany(ctx context.Context, c *mongo.Collection, filter any, opts ...*o
 	return nil
 }
 
-func FindOne[T any](ctx context.Context, c *mongo.Collection, filter any, opts ...*options.FindOneOptions) (T, error) {
+func FindOne[T any](ctx context.Context, c *mongo.Collection, filter any, opts ...*options.FindOneOptions) (doc T, err error) {
 	ctx, cancel := context.WithTimeout(ctx, Timeout)
 	defer cancel()
 
-	return DecodeOne[T](c.FindOne(ctx, filter, opts...))
+	err = DecodeOne(c.FindOne(ctx, filter, opts...), &doc)
+	return
 }
 
 func FindByCriteria[T any](ctx context.Context, c *mongo.Collection, criteria Criteria, opts ...*options.FindOptions) ([]T, error) {
 	return Find[T](ctx, c, criteria.Filter, append(opts, Pagination(criteria.Index, criteria.Size).SetSort(criteria.Sort))...)
 }
 
-func Find[T any](ctx context.Context, c *mongo.Collection, filter any, opts ...*options.FindOptions) ([]T, error) {
+func Find[T any](ctx context.Context, c *mongo.Collection, filter any, opts ...*options.FindOptions) (docs []T, err error) {
 	ctx, cancel := context.WithTimeout(ctx, Timeout)
 	defer cancel()
 
@@ -106,7 +107,8 @@ func Find[T any](ctx context.Context, c *mongo.Collection, filter any, opts ...*
 		return nil, fmt.Errorf(ErrMsgQuery, err)
 	}
 
-	return DecodeAll[T](ctx, result)
+	err = DecodeAll[T](ctx, result, &docs)
+	return
 }
 
 func Count(ctx context.Context, c *mongo.Collection, filter any, opts ...*options.CountOptions) (int64, error) {
@@ -120,24 +122,24 @@ func Count(ctx context.Context, c *mongo.Collection, filter any, opts ...*option
 	return count, nil
 }
 
-func DecodeOne[T any](r *mongo.SingleResult) (doc T, err error) {
+func DecodeOne(r *mongo.SingleResult, doc any) error {
 	if r.Err() != nil {
-		return doc, fmt.Errorf(ErrMsgQuery, r.Err())
+		return fmt.Errorf(ErrMsgQuery, r.Err())
 	}
-	if err = r.Decode(&doc); err != nil {
-		return doc, fmt.Errorf(ErrMsgDecode, err)
+	if err := r.Decode(&doc); err != nil {
+		return fmt.Errorf(ErrMsgDecode, err)
 	}
-	return doc, nil
+	return nil
 }
 
-func DecodeAll[T any](ctx context.Context, cur *mongo.Cursor) (docs []T, err error) {
+func DecodeAll(ctx context.Context, cur *mongo.Cursor, docs any) error {
 	if cur.Err() != nil {
-		return docs, fmt.Errorf(ErrMsgQuery, cur.Err())
+		return fmt.Errorf(ErrMsgQuery, cur.Err())
 	}
-	if err = cur.All(ctx, &docs); err != nil {
-		return docs, fmt.Errorf(ErrMsgDecode, err)
+	if err := cur.All(ctx, &docs); err != nil {
+		return fmt.Errorf(ErrMsgDecode, err)
 	}
-	return docs, nil
+	return nil
 }
 
 func ToBson(doc any) (bson.M, error) {
