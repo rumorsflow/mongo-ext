@@ -126,7 +126,7 @@ func DecodeOne(r *mongo.SingleResult, doc any) error {
 	if r.Err() != nil {
 		return fmt.Errorf(ErrMsgQuery, r.Err())
 	}
-	if err := r.Decode(&doc); err != nil {
+	if err := r.Decode(doc); err != nil {
 		return fmt.Errorf(ErrMsgDecode, err)
 	}
 	return nil
@@ -136,7 +136,7 @@ func DecodeAll(ctx context.Context, cur *mongo.Cursor, docs any) error {
 	if cur.Err() != nil {
 		return fmt.Errorf(ErrMsgQuery, cur.Err())
 	}
-	if err := cur.All(ctx, &docs); err != nil {
+	if err := cur.All(ctx, docs); err != nil {
 		return fmt.Errorf(ErrMsgDecode, err)
 	}
 	return nil
